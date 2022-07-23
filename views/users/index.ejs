@@ -1,5 +1,5 @@
 <%-include('../layouts/head');%>
-<div class="container mt-4" x-data="usuariosComponent()">
+<div class="container mt-4" x-data="usuariosComponent()" x-init="usuariosComponent().init">
 	<div class="row mx-auto my-auto justify-content-center">
 
 		<div class="col-8">
@@ -16,18 +16,23 @@
 								<th scope="col">#</th>
 								<th scope="col">Username</th>
 								<th scope="col">Password</th>
+								<th scope="col">Actions</th>
 							</tr>
 						</thead>
 						<tbody>
 
-							<p x-text="totalUsers"></p>
-
-
 							<template x-for="u in users">
 								<tr>
-									<th x-text="u.id" scope="row">1</th>
-									<td x-text="u.username">Mark</td>
-									<td x-text="u.password">Mark</td>
+									<th x-text="u.id" scope="row"></th>
+									<td x-text="u.username"></td>
+									<td x-text="u.password"></td>
+									<td>
+											<div class="btn-group" role="group" aria-label="Basic example">
+												<button type="button" @click="editUser" class="btn btn-success">Editar</button>
+												<button type="button" @click="deleteUser(u.id)" class="btn btn-danger">Borrar</button>
+											</div>
+										</div>
+									</td>
 								</tr>
 							</template>
 							
@@ -54,12 +59,24 @@
 
 	function usuariosComponent() {
 		return {
-			users: <%- JSON.stringify(users) %>,
-			totalUsers: <%= totalUsers %>,
-			page: <%= page %>,
-			limit: <%= limit %>,
-			baseURL: "http://localhost:3000/usuario",
+			users: [],
+			totalUsers: "",
+			page: "",
+			limit: "",
+			baseURL: "http://localhost:3000/user",
 
+
+			init: function() {
+				axios.get(this.baseURL+"/get")
+				.then(res => {
+					this.users = res.data.users;
+					this.totalUsers = res.data.totalUsers;
+					this.limit = res.data.limit;
+					this.page = res.data.page;
+				});
+
+				console.log("entro en init");
+			},
 
 			prevPage: function() {
 				if(this.page > 1) {
@@ -77,7 +94,23 @@
 					.then(res => this.users = res.data.users)
 					.catch(e => console.log(e));
 				}
-			}
+			},
+
+			editUser: function() {
+				console.log("edit");
+			},
+
+			deleteUser: function(id) {
+				axios.post(this.baseURL+'/destroy', {
+					id: id,
+				})
+				.then(res => this.init())
+				.catch(e => console.log(e));
+
+				console.log("Borro");
+
+			},
+
 		}
 	}
 

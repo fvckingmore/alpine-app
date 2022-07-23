@@ -5,5 +5,6 @@ const usuarioController = require('../controllers/usuarioController.js');
 /* GET users listing. */
 router.get('/', usuarioController.index);
 router.get('/get', usuarioController.get);
+router.post('/destroy', usuarioController.destroy);
 
 module.exports = router;
