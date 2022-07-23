@@ -5,16 +5,52 @@ const db = new PrismaClient()
 module.exports = {
 	index: async (req, res) => {
 
-		const usuarios = await db.Usuario.findMany({
+		const limit = 10;
+		const page = req.query.page ? parseInt(req.query.page) : 1;
+
+
+
+		const users = await db.Usuario.findMany({
 			orderBy: [{
 				id: 'desc'
-			}]
+			}],
+			take: limit,
+			skip: limit * (page - 1),
 		});
+
+		const totalUsers = await db.Usuario.count();
 		
 		return res.render('usuario/index', {
-			usuarios: usuarios,
+			users,
+			totalUsers,
+			page,
+			limit,
 		});
 	},
+
+	get: async (req, res) => {
+
+		const limit = 10;
+		const page = req.query.page ? parseInt(req.query.page) : 1;
+
+		const users = await db.Usuario.findMany({
+			orderBy: [{
+				id: 'desc'
+			}],
+			take: limit,
+			skip: limit * (page - 1),
+		});
+
+		const totalUsers = await db.Usuario.count();
+		
+		return res.json({
+			users,
+			totalUsers,
+			page,
+			limit,
+		});
+	},
+
 
 	create: async (req, res) => {
 		try {

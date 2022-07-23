@@ -6,7 +6,7 @@ const { faker } = require('@faker-js/faker');
 
 	await db.Usuario.deleteMany({});
 
-	for(let i = 0; i < 10; i++) {
+	for(let i = 0; i < 100; i++) {
 		const u = await db.Usuario.create({
 
 			data: {

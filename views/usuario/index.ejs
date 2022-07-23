@@ -1,5 +1,5 @@
 <%-include('../layouts/head');%>
-<div class="container" x-data="usuariosComponent()">
+<div class="container mt-4" x-data="usuariosComponent()">
 	<div class="row mx-auto my-auto justify-content-center">
 
 		<div class="col-8">
@@ -19,7 +19,11 @@
 							</tr>
 						</thead>
 						<tbody>
-							<template x-for="u in usuarios">
+
+							<p x-text="totalUsers"></p>
+
+
+							<template x-for="u in users">
 								<tr>
 									<th x-text="u.id" scope="row">1</th>
 									<td x-text="u.username">Mark</td>
@@ -31,10 +35,53 @@
 					</table>
 
 				</div>
+
+				<div class="card-footer text-center">
+					<div class="btn-group" role="group" aria-label="Basic example">
+						<button type="button" @click="prevPage" class="btn btn-primary">Prev</button>
+						<button type="button" @click="nextPage" class="btn btn-primary">Next</button>
+					</div>
+				</div>
+
 			</div>
 		</div>
 	</div>
 </div>
+
 <%-include('../layouts/scripts');%>
-<%-include('./component');%>
+
+<script type="text/javascript">
+
+	function usuariosComponent() {
+		return {
+			users: <%- JSON.stringify(users) %>,
+			totalUsers: <%= totalUsers %>,
+			page: <%= page %>,
+			limit: <%= limit %>,
+			baseURL: "http://localhost:3000/usuario",
+
+
+			prevPage: function() {
+				if(this.page > 1) {
+					this.page--;
+					axios.get(this.baseURL+"/get?page="+this.page)
+					.then(res => this.users = res.data.users)
+					.catch(e => console.log(e));
+				}
+			},
+
+			nextPage: function() {
+				if(this.page < 10) {
+					this.page++;
+					axios.get(this.baseURL+"/get?page="+this.page)
+					.then(res => this.users = res.data.users)
+					.catch(e => console.log(e));
+				}
+			}
+		}
+	}
+
+</script>
+
+
 <%-include('../layouts/foot');%>
