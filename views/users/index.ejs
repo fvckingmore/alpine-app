@@ -43,8 +43,13 @@
 
 				<div class="card-footer text-center">
 					<div class="btn-group" role="group" aria-label="Basic example">
-						<button type="button" @click="prevPage" class="btn btn-primary">Prev</button>
-						<button type="button" @click="nextPage" class="btn btn-primary">Next</button>
+						<template x-if="page > 1">
+							
+							<button type="button" @click="prevPage" class="btn btn-primary">Prev</button>
+						</template>
+						<template x-if="page < (totalUsers/10)">
+							<button type="button" @click="nextPage" class="btn btn-primary">Next</button>
+						</template>
 					</div>
 				</div>
 
@@ -53,6 +58,7 @@
 	</div>
 </div>
 
+<%-include('./modal');%>
 <%-include('../layouts/scripts');%>
 
 <script type="text/javascript">
@@ -64,6 +70,7 @@
 			page: "",
 			limit: "",
 			baseURL: "http://localhost:3000/user",
+			openModal: false,
 
 
 			init: function() {
@@ -73,6 +80,7 @@
 					this.totalUsers = res.data.totalUsers;
 					this.limit = res.data.limit;
 					this.page = res.data.page;
+					this.openModal = false;
 				});
 
 				console.log("entro en init");
@@ -88,7 +96,7 @@
 			},
 
 			nextPage: function() {
-				if(this.page < 10) {
+				if(this.page < (this.totalUsers/10)) {
 					this.page++;
 					axios.get(this.baseURL+"/get?page="+this.page)
 					.then(res => this.users = res.data.users)

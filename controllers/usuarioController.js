@@ -53,8 +53,6 @@ module.exports = {
 		} catch(e) {
 			console.log(e);
 		}
-
-		return res.send(200, "ok");
-
+		return res.status(200).send("ok");
 	},
 }
