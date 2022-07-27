@@ -3,7 +3,7 @@
 
 <div class="container mt-4" x-data="usuariosComponent()" x-init="usuariosComponent.init">
 
-	<div x-cloak x-show="users.length === 0" x-transition>
+	<div x-cloak x-show="initVar" x-transition>
 		<div class="d-flex justify-content-center">
 			<div class="spinner-border" role="status">
 				<span class="sr-only">Loading...</span>
@@ -11,7 +11,7 @@
 		</div>
 	</div>
 
-<div x-cloak x-show="users.length !== 0" x-transition>
+<div x-cloak x-show="!initVar" x-transition>
 	
 	<div class="row mx-auto my-auto justify-content-center">
 		<div class="col-8">
@@ -36,6 +36,13 @@
 				</div>
 				<div class="card-body">
 
+					<template x-if="users.length === 0">
+						<h3 class="text-center">No hay registros</h3>
+					</template>
+
+					<template x-if="users.length !== 0">
+
+
 					<table class="table text-center">
 						<thead>
 							<tr>
@@ -47,14 +54,14 @@
 						</thead>
 						<tbody>
 
-							<template x-for="u in users">
+							<template x-for="(u, index) in users">
 								<tr>
 									<th x-text="u.id" scope="row"></th>
 									<td x-text="u.username"></td>
 									<td x-text="u.password"></td>
 									<td>
 											<div class="btn-group" role="group" aria-label="Basic example">
-												<button type="button" @click="editUser" class="btn btn-success">Editar</button>
+												<button type="button" @click="editUser(index)" class="btn btn-success">Editar</button>
 												<button type="button" @click="deleteUser(u.id)" class="btn btn-danger">Borrar</button>
 											</div>
 										</div>
@@ -64,6 +71,7 @@
 							
 						</tbody>
 					</table>
+				</template>
 
 				</div>
 
@@ -100,6 +108,9 @@
 			modal: false,
 			user: "",
 			password: "",
+			userId: "",
+			initVar: true,
+			edit: false,
 
 
 			init: function() {
@@ -111,7 +122,10 @@
 					this.page = res.data.page;
 					this.user = "";
 					this.password = "";
+					this.userId = "";
 					this.modal = false;
+					this.initVar = false;
+					this.edit = false;
 				});
 			},
 
@@ -133,10 +147,6 @@
 				}
 			},
 
-			editUser: function() {
-				console.log("edit");
-			},
-
 			deleteUser: function(id) {
 				axios.post(this.baseURL+'/destroy', {
 					id: id,
@@ -146,12 +156,30 @@
 			},
 
 			addUser: function() {
-				axios.post(this.baseURL+'/create', {
-					username: this.user,
-					password: this.password,
-				})
-				.then(res => this.init())
-				.catch(e => console.log(e));
+				if(this.edit) {
+					axios.post(this.baseURL+'/update', {
+						username: this.user,
+						password: this.password,
+						id: this.userId,
+					})
+					.then(res => this.init())
+					.catch(e => console.log(e));
+				} else {
+					axios.post(this.baseURL+'/create', {
+						username: this.user,
+						password: this.password,
+					})
+					.then(res => this.init())
+					.catch(e => console.log(e));
+				}
+			},
+
+			editUser: function(index) {
+				this.user = this.users[index].username;
+				this.password = this.users[index].password;
+				this.userId = this.users[index].id;
+				this.edit = true;
+				this.openModal();
 			},
 
 			openModal: function() {
@@ -160,6 +188,8 @@
 
 			closeModal: function() {
 				this.modal = ! this.modal;
+				this.user = "";
+				this.password = "";
 			},
 
 
