@@ -32,12 +32,16 @@ module.exports = {
 	create: async (req, res) => {
 		try {
 			await db.Usuario.create({
-				username: req.body.username,
-				password: req.body.password,
+				data: {
+					username: req.body.username,
+					password: req.body.password,
+				}
 			});
 		} catch(e) {
 			console.log(e);
 		}
+
+		return res.status(200).send('ok');
 	},
 
 	destroy: async (req, res) => {

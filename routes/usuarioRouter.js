@@ -6,5 +6,6 @@ const usuarioController = require('../controllers/usuarioController.js');
 router.get('/', usuarioController.index);
 router.get('/get', usuarioController.get);
 router.post('/destroy', usuarioController.destroy);
+router.post('/create', usuarioController.create);
 
 module.exports = router;

@@ -3,6 +3,16 @@
 
 <div class="container mt-4" x-data="usuariosComponent()" x-init="usuariosComponent.init">
 
+	<div x-cloak x-show="users.length === 0" x-transition>
+		<div class="d-flex justify-content-center">
+			<div class="spinner-border" role="status">
+				<span class="sr-only">Loading...</span>
+			</div>
+		</div>
+	</div>
+
+<div x-cloak x-show="users.length !== 0" x-transition>
+	
 	<div class="row mx-auto my-auto justify-content-center">
 		<div class="col-8">
 
@@ -10,8 +20,10 @@
 		</div>
 	</div>
 
-	<div class="row mx-auto my-auto justify-content-end">
-		<button class="btn btn-primary" x-show="!modal" @click="openModal">+</button>
+	<div class="row mx-auto my-2 justify-content-center">
+		<div class="col-8 text-right">
+			<button class="btn btn-primary" x-show="!modal" @click="openModal">+</button>
+		</div>
 	</div>
 
 	<div class="row mx-auto my-auto justify-content-center">
@@ -72,6 +84,8 @@
 	</div>
 </div>
 
+</div>
+
 <%-include('../layouts/scripts');%>
 
 <script type="text/javascript">
@@ -84,6 +98,8 @@
 			limit: "",
 			baseURL: "http://localhost:3000/user",
 			modal: false,
+			user: "",
+			password: "",
 
 
 			init: function() {
@@ -93,9 +109,10 @@
 					this.totalUsers = res.data.totalUsers;
 					this.limit = res.data.limit;
 					this.page = res.data.page;
+					this.user = "";
+					this.password = "";
+					this.modal = false;
 				});
-
-				console.log("entro en init");
 			},
 
 			prevPage: function() {
@@ -126,9 +143,15 @@
 				})
 				.then(res => this.init())
 				.catch(e => console.log(e));
+			},
 
-				console.log("Borro");
-
+			addUser: function() {
+				axios.post(this.baseURL+'/create', {
+					username: this.user,
+					password: this.password,
+				})
+				.then(res => this.init())
+				.catch(e => console.log(e));
 			},
 
 			openModal: function() {
@@ -138,6 +161,8 @@
 			closeModal: function() {
 				this.modal = ! this.modal;
 			},
+
+
 		}
 	}
 
